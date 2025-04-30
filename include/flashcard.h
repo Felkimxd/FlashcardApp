@@ -21,6 +21,7 @@ class Flashcard{
         int triesCounter;
         int stimatedTimeSeconds;
 
-        void gradeCalc();
+        void gradeCalc(float const &timeTakeIt, float const &userFeedback);
+
         void addCounter();
 };
