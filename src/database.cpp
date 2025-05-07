@@ -26,17 +26,17 @@ void dataBaseManager::insertRegister(tables tableType, void *data)
     sqlite3_stmt *stmt = nullptr;
     std::string query ;
     int rc;
-    rc = sqlite3_open(this->DBNAME, &this->db);
+    sqlite3_open(this->DBNAME, &this->db);
 
     switch (tableType)
     {
     case Flashcards:{
-        
 
         FlashcardData *flashcard = static_cast<FlashcardData *>(data);
         query = this->insertFlashcardQuery;
+
         sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
-        
+
         sqlite3_bind_text(stmt, 1, flashcard->question.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 2, flashcard->answer.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 3, flashcard->subject.c_str(), -1, SQLITE_STATIC);
@@ -69,6 +69,7 @@ void dataBaseManager::insertRegister(tables tableType, void *data)
     }
     };
     
+    sqlite3_step(stmt);
     sqlite3_finalize(stmt);
     sqlite3_close(this->db);
 
@@ -86,10 +87,8 @@ void dataBaseManager::readRegister(tables tableType, std::string const &ID)
     {
     case Flashcards:
     {
-        query = "SELECT * FROM Flashcards WHERE ID = ?;";
+        query = "SELECT * FROM Flashcards;";
         sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
-
-        rc = sqlite3_bind_text(stmt, 1, ID.c_str(), -1, SQLITE_STATIC);
         
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
@@ -98,6 +97,7 @@ void dataBaseManager::readRegister(tables tableType, std::string const &ID)
             std::cout << "Question: " << sqlite3_column_text(stmt, 2) << std::endl;
             std::cout << "Answer: " << sqlite3_column_text(stmt, 3) << std::endl;
             std::cout << "Grade: " << sqlite3_column_int(stmt, 4) << std::endl;
+            std::cout << "\n";
         }
         break;
     }
@@ -146,8 +146,10 @@ void dataBaseManager::editRegister(tables tableType, const std::string &ID, void
 {
     sqlite3_stmt *stmt = nullptr;
     std::string query;
+    int rc;
+ 
     sqlite3_open(this->DBNAME, &this->db);
-
+    
     switch (tableType)
     {
     case Flashcards:
@@ -155,12 +157,12 @@ void dataBaseManager::editRegister(tables tableType, const std::string &ID, void
         FlashcardData *flashcard = static_cast<FlashcardData *>(newData);
         query = "UPDATE Flashcards SET Subject = ?, Question = ?, Answer = ? WHERE ID = ?;";
 
-        sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
+        rc = sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
 
         sqlite3_bind_text(stmt, 1, flashcard->subject.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 2, flashcard->question.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 3, flashcard->answer.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 5, ID.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 4, ID.c_str(), -1, SQLITE_STATIC);
         break;
     }
 
@@ -189,12 +191,14 @@ void dataBaseManager::editRegister(tables tableType, const std::string &ID, void
         break;
     }
 
-    default:
+    default:{
         std::cerr << "Table Does not Exist!" << std::endl;
-        return;
+        break;
     }
 
-    int rc = sqlite3_step(stmt);
+    }
+
+    sqlite3_step(stmt);
 
     sqlite3_finalize(stmt);
     sqlite3_close(this->db);
