@@ -69,17 +69,6 @@ void dataBaseManager::insertRegister(tables tableType, void *data)
     }
     };
     
-    rc = sqlite3_step(stmt);
-    if (rc != SQLITE_DONE)
-    {
-        std::cerr << "Error ejecutando la consulta: " << sqlite3_errmsg(db) << std::endl;
-        std::cerr << "Código de error: " << rc << std::endl;
-    }
-    else
-    {
-        std::cout << "Registro insertado correctamente." << std::endl;
-    }
-
     sqlite3_finalize(stmt);
     sqlite3_close(this->db);
 
