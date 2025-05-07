@@ -1,7 +1,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <flashcard.h>
+#include "flashcard.h"
+#include "database.h"
 
 int Menu(){
 
@@ -21,6 +22,14 @@ int Menu(){
 
 
 int main(){
+    
+    FlashcardData flashcard;
+    UserData user;
+    GameData game;
+    dataBaseManager db;
+
+    std::string ID;
+
     bool running = true;
     int option = 0;
 
@@ -29,13 +38,26 @@ int main(){
         switch (option = Menu())
         {
         case 1:
-            /*code*/
+        
+            std::cout << "Enter the subject: " << "\n";
+            std::cin >> flashcard.subject;
+            std::cout << "Enter the question: " << "\n";
+            std::cin >> flashcard.question;
+            std::cout << "Enter the answer: " << "\n";
+            std::cin >> flashcard.answer;
+            db.insertRegister(tables::Flashcards, &flashcard);
+
             break;
         case 2:
-            /* code */
+            std::cout << "Insert the ID to read: " << "\n";
+            std::cin >> ID;
+            db.readRegister(tables::Flashcards,ID);
+
             break;
         case 3:
-            /* code */
+            std::cout << "Insert the ID to delete " << "\n";
+            std::cin >> ID;
+            db.readRegister(tables::Flashcards, ID);
             break;
         case 4:
             std::cout << "Exiting..." << std::endl;
