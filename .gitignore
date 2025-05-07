@@ -3,3 +3,4 @@ build/
 temp/
 CMakeLists.txt
 external/
+/archives/data/FlashcardApp.db
