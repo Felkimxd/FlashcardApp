@@ -59,3 +59,4 @@ std::string const Flashcard::getQuestion() {
 std::string const Flashcard::getAnswer(){
 
     return this->answer;
+}
