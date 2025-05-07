@@ -57,7 +57,7 @@ int main(){
         case 3:
             std::cout << "Insert the ID to delete " << "\n";
             std::cin >> ID;
-            db.readRegister(tables::Flashcards, ID);
+            db.deleteRegister(tables::Flashcards, ID);
             break;
         case 4:
             std::cout << "Exiting..." << std::endl;

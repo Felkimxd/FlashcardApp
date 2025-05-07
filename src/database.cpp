@@ -91,15 +91,17 @@ void dataBaseManager::readRegister(tables tableType, std::string const &ID)
     sqlite3_stmt *stmt = nullptr;
     std::string query;
     sqlite3_open(this->DBNAME, &this->db);
+    int rc;
 
     switch (tableType)
     {
     case Flashcards:
     {
         query = "SELECT * FROM Flashcards WHERE ID = ?;";
-        
-        sqlite3_bind_text(stmt, 1, ID.c_str(), -1, SQLITE_STATIC);
+        sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
 
+        rc = sqlite3_bind_text(stmt, 1, ID.c_str(), -1, SQLITE_STATIC);
+        
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
             std::cout << "Flashcard ID: " << sqlite3_column_text(stmt, 0) << std::endl;
