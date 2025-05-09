@@ -1,5 +1,7 @@
 #include <string>
 #include "sqlite3.h"
+#include <vector>
+#include <utility>
 
 enum tables
 {
@@ -29,6 +31,7 @@ struct GameData
 
 };
 
+using FlashcarQA = std::vector<std::pair<std::string, std::string>>;
 class dataBaseManager{
 
     public:
@@ -40,6 +43,8 @@ class dataBaseManager{
         void readRegister(tables tableType , std::string const &ID);
         void deleteRegister(tables tableType, std::string const &ID);
         void editRegister(tables tableType, std::string const &ID, void *newData);
+
+        FlashcarQA retrieve_Flashcards(std::string &subject ,int const &flashcardQuantity);
 
     private:
 

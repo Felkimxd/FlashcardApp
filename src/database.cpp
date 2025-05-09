@@ -249,3 +249,7 @@ void dataBaseManager::deleteRegister(tables tableType, const std::string &ID)
     sqlite3_finalize(stmt);
     sqlite3_close(this->db);
 }
+
+FlashcarQA retrieve_Flashcards(std::string &subject, int const &flashcardQuantity){
+    
+}
