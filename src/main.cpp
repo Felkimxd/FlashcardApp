@@ -48,10 +48,7 @@ int Menu_Parameters()
 
 int main(){
     
-    FlashcardData flashcard;
-    UserData user;
-    GameData game;
-    SubjectData subject;
+    
 
     dataBaseManager db;
 
@@ -62,6 +59,11 @@ int main(){
 
     while (running)
     {
+        FlashcardData flashcard;
+        UserData user;
+        GameData game;
+        SubjectData subject;
+        
         switch (option = Menu())
         {
         case 1:{
