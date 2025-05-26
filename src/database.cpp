@@ -35,14 +35,32 @@ void dataBaseManager::insertRegister(tables tableType, void *data)
     case Flashcards:{
 
         FlashcardData *flashcard = static_cast<FlashcardData *>(data);
-        query = this->insertFlashcardQuery;
 
-        sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
+        std::string checkQuery = "SELECT 1 FROM Subjects WHERE Subject = ?;";
+        sqlite3_stmt *checkStmt = nullptr;
 
-        sqlite3_bind_text(stmt, 1, flashcard->question.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 2, flashcard->answer.c_str(), -1, SQLITE_STATIC);
+        rc = sqlite3_prepare_v2(this->db, checkQuery.c_str(), -1, &checkStmt, nullptr);
+        sqlite3_bind_text(checkStmt, 1, flashcard->subject.c_str(), -1, SQLITE_STATIC);
+
+        if (sqlite3_step(checkStmt) != SQLITE_ROW)
+        {
+            std::cout << "Error: Subject '" << flashcard->subject << "' Does not exist. Please create First." << std::endl;
+            sqlite3_finalize(checkStmt);
+            break;
+        }
+        else
+        {
+            query = this->insertFlashcardQuery;
+
+            sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
+
+            sqlite3_bind_text(stmt, 1, flashcard->subject.c_str(), -1, SQLITE_STATIC);
+            sqlite3_bind_text(stmt, 2, flashcard->question.c_str(), -1, SQLITE_STATIC);
+            sqlite3_bind_text(stmt, 3, flashcard->answer.c_str(), -1, SQLITE_STATIC);
+        }
+
+        sqlite3_finalize(checkStmt);
         
-
         break;
     }
         
@@ -208,6 +226,21 @@ void dataBaseManager::editRegister(tables tableType, const std::string &ID, void
     case Flashcards:
     {
         FlashcardData *flashcard = static_cast<FlashcardData *>(newData);
+
+        std::string checkQuery = "SELECT 1 FROM Subjects WHERE Subject = ?;";
+        sqlite3_stmt *checkStmt = nullptr;
+
+        rc = sqlite3_prepare_v2(this->db, checkQuery.c_str(), -1, &checkStmt, nullptr);
+        sqlite3_bind_text(checkStmt, 1, flashcard->subject.c_str(), -1, SQLITE_STATIC);
+
+        if (sqlite3_step(checkStmt) != SQLITE_ROW)
+        {
+            std::cout << "Error: Subject  '" << flashcard->subject << "' does not exist." << std::endl;
+            sqlite3_finalize(checkStmt);
+            return;
+        }
+        sqlite3_finalize(checkStmt);
+
         query = "UPDATE Flashcards SET Subject = ?, Question = ?, Answer = ? WHERE ID = ?;";
 
         rc = sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);

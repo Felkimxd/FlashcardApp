@@ -62,7 +62,10 @@ private:
         "Subject TEXT, "
         "Question TEXT, "
         "Answer TEXT, "
-        "Grade INTEGER"
+        "Grade INTEGER, "
+        "FOREIGN KEY(Subject) REFERENCES Subjects(Subject) "
+        "ON DELETE CASCADE "
+        "ON UPDATE CASCADE"
         ");";
 
     const char *createUser =
@@ -84,7 +87,7 @@ private:
         ");";
 
     const std::string insertFlashcardQuery =
-        "INSERT INTO Flashcards (Question, Answer,Grade) VALUES (?, ?, NULL);";
+        "INSERT INTO Flashcards (Subject, Question, Answer, Grade) VALUES (?, ?, ?, NULL);";
 
     const std::string insertUsersQuery =
         "INSERT INTO Users (Username,Password) VALUES (?,?);";
