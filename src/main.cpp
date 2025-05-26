@@ -150,6 +150,9 @@ int main(){
             switch (parameters_option)
             {
             case 1:
+
+                db.readRegister(tables::Subject);
+                
                 std::cout << "Enter the subject: " << "\n";
                 std::getline(std::cin, flashcard.subject);
                 break;
@@ -191,7 +194,7 @@ int main(){
             default:
                 break;
             }
-            
+
             db.editRegister(tables::Flashcards, ID, &flashcard);
             break;
         

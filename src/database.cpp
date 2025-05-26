@@ -229,30 +229,54 @@ void dataBaseManager::editRegister(tables tableType, const std::string &ID, void
     case Flashcards:
     {
         FlashcardData *flashcard = static_cast<FlashcardData *>(newData);
-
-        std::string checkQuery = "SELECT 1 FROM Subjects WHERE Subject = ?;";
-        sqlite3_stmt *checkStmt = nullptr;
-
-        rc = sqlite3_prepare_v2(this->db, checkQuery.c_str(), -1, &checkStmt, nullptr);
-        sqlite3_bind_text(checkStmt, 1, flashcard->subject.c_str(), -1, SQLITE_STATIC);
-
-        if (sqlite3_step(checkStmt) != SQLITE_ROW)
-        {
-            std::cout << "Error: Subject  '" << flashcard->subject << "' does not exist." << std::endl;
+    
+        // Si se está editando el subject, verificar que exista
+        if (!flashcard->subject.empty()) {
+            std::string checkQuery = "SELECT 1 FROM Subjects WHERE Subject = ?;";
+            sqlite3_stmt *checkStmt = nullptr;
+    
+            rc = sqlite3_prepare_v2(this->db, checkQuery.c_str(), -1, &checkStmt, nullptr);
+            sqlite3_bind_text(checkStmt, 1, flashcard->subject.c_str(), -1, SQLITE_STATIC);
+    
+            if (sqlite3_step(checkStmt) != SQLITE_ROW) {
+                std::cout << "Error: Subject '" << flashcard->subject << "' does not exist." << std::endl;
+                sqlite3_finalize(checkStmt);
+                return;
+            }
             sqlite3_finalize(checkStmt);
-            return;
+            query = "UPDATE Flashcards SET Subject = ? WHERE ID = ?;";
         }
-        sqlite3_finalize(checkStmt);
-
-        query = "UPDATE Flashcards SET Subject = ?, Question = ?, Answer = ?, EstimatedTime = ? WHERE ID = ?;";
+        // Si se está editando la pregunta
+        else if (!flashcard->question.empty()) {
+            query = "UPDATE Flashcards SET Question = ? WHERE ID = ?;";
+        }
+        // Si se está editando la respuesta
+        else if (!flashcard->answer.empty()) {
+            query = "UPDATE Flashcards SET Answer = ? WHERE ID = ?;";
+        }
+        // Si se está editando el tiempo estimado
+        else if (flashcard->estimatedTime != 0)
+        {
+            query = "UPDATE Flashcards SET EstimatedTime = ? WHERE ID = ?;";
+        }
 
         rc = sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
-
-        sqlite3_bind_text(stmt, 1, flashcard->subject.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 2, flashcard->question.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 3, flashcard->answer.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 4, flashcard->EstimatedTime.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 5, ID.c_str(), -1, SQLITE_STATIC);
+    
+        // Vincular el valor correspondiente según el campo que se está editando
+        if (!flashcard->subject.empty()) {
+            sqlite3_bind_text(stmt, 1, flashcard->subject.c_str(), -1, SQLITE_STATIC);
+        }
+        else if (!flashcard->question.empty()) {
+            sqlite3_bind_text(stmt, 1, flashcard->question.c_str(), -1, SQLITE_STATIC);
+        }
+        else if (!flashcard->answer.empty()) {
+            sqlite3_bind_text(stmt, 1, flashcard->answer.c_str(), -1, SQLITE_STATIC);
+        }
+        else if (flashcard->estimatedTime != 0) {
+            sqlite3_bind_int(stmt, 1, flashcard->estimatedTime);
+        }
+    
+        sqlite3_bind_text(stmt, 2, ID.c_str(), -1, SQLITE_STATIC);
         break;
     }
 
