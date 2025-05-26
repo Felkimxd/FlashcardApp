@@ -244,14 +244,15 @@ void dataBaseManager::editRegister(tables tableType, const std::string &ID, void
         }
         sqlite3_finalize(checkStmt);
 
-        query = "UPDATE Flashcards SET Subject = ?, Question = ?, Answer = ? WHERE ID = ?;";
+        query = "UPDATE Flashcards SET Subject = ?, Question = ?, Answer = ?, EstimatedTime = ? WHERE ID = ?;";
 
         rc = sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
 
         sqlite3_bind_text(stmt, 1, flashcard->subject.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 2, flashcard->question.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 3, flashcard->answer.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 4, ID.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 4, flashcard->estimatedTime.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 5, ID.c_str(), -1, SQLITE_STATIC);
         break;
     }
 

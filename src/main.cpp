@@ -26,6 +26,24 @@ int Menu(){
 
 }
 
+int Menu_Parameters()
+{
+
+    int option = 0;
+    std::cout << "\n======================== Flashcard Parameters =======================" << std::endl;
+    std::cout << "1. Subject" << std::endl;
+    std::cout << "2. Question" << std::endl;
+    std::cout << "3. Answer" << std::endl;
+    std::cout << "4. Estimated time" << std::endl;
+    std::cout << "6. Exit" << std::endl;
+    std::cout << "==============================================================" << "\n";
+    std::cout << "Select an option: ";
+    std::cin >> option;
+    std::cin.ignore();
+    std::cout << "\n";
+
+    return option;
+}
 
 int main(){
     
@@ -117,22 +135,63 @@ int main(){
             break;
         
         case 4:
+
+            int parameters_option;
+
+            db.readRegister(tables::Flashcards);
+
             std::cout << "Insert the ID to edit " << "\n";
             std::cin >> ID;
 
             std::cin.ignore();
 
-            std::cout << "Enter the subject: " << "\n";
-            std::getline(std::cin, flashcard.subject);
+            parameters_option = Menu_Parameters();
 
-            std::cout << "Enter the question: " << "\n";
-            std::getline(std::cin, flashcard.question);
-
-            std::cout << "Enter the answer: " << "\n";
-            std::getline(std::cin, flashcard.answer);
+            switch (parameters_option)
+            {
+            case 1:
+                std::cout << "Enter the subject: " << "\n";
+                std::getline(std::cin, flashcard.subject);
+                break;
             
-            std::cout<< "\n";
+            case 2:
+                std::cout << "Enter the question: " << "\n";
+                std::getline(std::cin, flashcard.question);
+                break;
+            
+            case 3:
+                std::cout << "Enter the answer: " << "\n";
+                std::getline(std::cin, flashcard.answer);
+                break;
+            
+            case 4:{
+                std::cout << "Enter the estimated time (seconds): " << "\n";
+                std::string tempTime;
+                std::getline(std::cin, tempTime);
 
+                try
+                {
+                    flashcard.estimatedTime = std::stoi(tempTime);
+                }
+                catch (const std::invalid_argument &e)
+                {
+                    std::cout << "Error: Invalid number\n";
+                    flashcard.estimatedTime = 0;
+                }
+                catch (const std::out_of_range &e)
+                {
+                    std::cout << "Error: Out of range value\n";
+                    flashcard.estimatedTime = 0;
+                }
+
+                std::cout << "\n";
+
+                break;
+            }
+            default:
+                break;
+            }
+            
             db.editRegister(tables::Flashcards, ID, &flashcard);
             break;
         
