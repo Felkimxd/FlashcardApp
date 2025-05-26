@@ -45,7 +45,7 @@ public:
     sqlite3 *db;
 
     void insertRegister(tables tabletype, void *data);
-    void readRegister(tables tableType, std::string const &ID);
+    void readRegister(tables tableType, std::string const &ID = "");
     void deleteRegister(tables tableType, std::string const &ID);
     void editRegister(tables tableType, std::string const &ID, void *newData);
 

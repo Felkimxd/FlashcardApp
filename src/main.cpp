@@ -7,13 +7,14 @@
 int Menu(){
     
     int option = 0;
-    std::cout << "======================== Flashcard App =======================" << std::endl;
+    std::cout << "\n======================== Flashcard App =======================" << std::endl;
     std::cout << "1. Add Flashcard" << std::endl;
     std::cout << "2. Show Flashcards" << std::endl;
     std::cout << "3. Delete Flashcard" << std::endl;
     std::cout << "4. Edit Flashcard" << std::endl;
     std::cout << "5. Register a Subject" << std::endl;
-    std::cout << "6. Exit" << std::endl;
+    std::cout << "6. Show Subjects" << std::endl;
+    std::cout << "7. Exit" << std::endl;
     std::cout << "==============================================================" << "\n";
     std::cout << "Select an option: ";
     std::cin >> option;
@@ -92,6 +93,8 @@ int main(){
             break;
         
         case 5:
+
+            db.readRegister(tables::Subject);
             std::cin.ignore(); // Limpia el buffer
             std::cout << "Enter the subject: ";
             std::getline(std::cin, subject.subjectN);
@@ -99,9 +102,17 @@ int main(){
             break;
 
         case 6:
+
+            db.readRegister(tables::Subject);
+            break;
+
+        case 7:
+
             std::cout << "Exiting..." << std::endl;
             running = false;
             break;
+
+
         default:
             std::cout << "Invalid option. Please try again." << std::endl;
             std::cout << '\n';

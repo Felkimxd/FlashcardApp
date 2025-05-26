@@ -65,44 +65,34 @@ void dataBaseManager::insertRegister(tables tableType, void *data)
         break;
     }
 
-        case Subject: {
+    case Subject: {
+
         SubjectData *subject = static_cast<SubjectData *>(data);
-        
+
         // Verify ifthe subject exits
         std::string checkQuery = "SELECT Subject FROM Subjects WHERE Subject = ?;";
         sqlite3_stmt *checkStmt = nullptr;
-        
+
         rc = sqlite3_prepare_v2(this->db, checkQuery.c_str(), -1, &checkStmt, nullptr);
         sqlite3_bind_text(checkStmt, 1, subject->subjectN.c_str(), -1, SQLITE_STATIC);
-        
-        if (sqlite3_step(checkStmt) == SQLITE_ROW) {
+
+        if (sqlite3_step(checkStmt) == SQLITE_ROW)
+        {
             std::cout << "Subject '" << subject->subjectN << "' already exists!" << std::endl;
             sqlite3_finalize(checkStmt);
             break;
         }
+
         sqlite3_finalize(checkStmt);
     
         // If not exists proceed with the insertion
         query = this->insertSubjectsQuery;
-        rc = sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
+        sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
         
-        if (rc != SQLITE_OK) {
-            std::cerr << "Error preparando la consulta: " << sqlite3_errmsg(db) << std::endl;
-            break;
-        }
-    
-        rc = sqlite3_bind_text(stmt, 1, subject->subjectN.c_str(), -1, SQLITE_STATIC);
-        if (rc != SQLITE_OK) {
-            std::cerr << "Error vinculando subject: " << sqlite3_errmsg(db) << std::endl;
-            break;
-        }
-    
-        rc = sqlite3_step(stmt);
-        if (rc == SQLITE_DONE) {
-            std::cout << "¡Subject '" << subject->subjectN << "' registrado exitosamente!" << std::endl;
-        } else {
-            std::cerr << "Error insertando subject: " << sqlite3_errmsg(db) << std::endl;
-        }
+        sqlite3_bind_text(stmt, 1, subject->subjectN.c_str(), -1, SQLITE_STATIC);
+
+        std::cout << "Subject '" << subject->subjectN << "' registered succesfully!" << std::endl;
+
         
         break;
     }
@@ -174,6 +164,25 @@ void dataBaseManager::readRegister(tables tableType, std::string const &ID)
             std::cout << "Game ID: " << sqlite3_column_text(stmt, 0) << std::endl;
             std::cout << "Range: " << sqlite3_column_text(stmt, 1) << std::endl;
         }
+        break;
+    }
+
+    case Subject:
+    {
+        query = "SELECT * FROM Subjects;";
+
+        sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
+
+        std::cout << "\n=== Subjects List ===\n"                                                                                                    << std::endl;
+
+        while (sqlite3_step(stmt) == SQLITE_ROW)
+        {
+
+            std::cout << "ID: " << sqlite3_column_text(stmt, 0)
+                      << " | Subject: " << sqlite3_column_text(stmt, 1) << std::endl;
+
+        }
+        std::cout << "\n===================" << std::endl;
         break;
     }
 
