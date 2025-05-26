@@ -251,7 +251,7 @@ void dataBaseManager::editRegister(tables tableType, const std::string &ID, void
         sqlite3_bind_text(stmt, 1, flashcard->subject.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 2, flashcard->question.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 3, flashcard->answer.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 4, flashcard->estimatedTime.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 4, flashcard->EstimatedTime.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 5, ID.c_str(), -1, SQLITE_STATIC);
         break;
     }
