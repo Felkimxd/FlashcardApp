@@ -5,14 +5,15 @@
 #include "database.h"
 
 int Menu(){
-
+    
     int option = 0;
     std::cout << "======================== Flashcard App =======================" << std::endl;
     std::cout << "1. Add Flashcard" << std::endl;
     std::cout << "2. Show Flashcards" << std::endl;
     std::cout << "3. Delete Flashcard" << std::endl;
     std::cout << "4. Edit Flashcard" << std::endl;
-    std::cout << "5. Exit" << std::endl;
+    std::cout << "5. Register a Subject" << std::endl;
+    std::cout << "6. Exit" << std::endl;
     std::cout << "==============================================================" << "\n";
     std::cout << "Select an option: ";
     std::cin >> option;
@@ -28,6 +29,8 @@ int main(){
     FlashcardData flashcard;
     UserData user;
     GameData game;
+    SubjectData subject;
+
     dataBaseManager db;
 
     std::string ID;
@@ -42,7 +45,7 @@ int main(){
         case 1:
 
             std::cout << "Enter the subject: " << "\n";
-            std::cin.ignore(); // Limpia el buffer antes de getline
+            std::cin.ignore(); // Erase the buffer before getline
             std::getline(std::cin, flashcard.subject);
 
             std::cout << "Enter the question: " << "\n";
@@ -72,7 +75,7 @@ int main(){
             std::cout << "Insert the ID to edit " << "\n";
             std::cin >> ID;
 
-            std::cin.ignore(); // Limpia el buffer
+            std::cin.ignore();
 
             std::cout << "Enter the subject: " << "\n";
             std::getline(std::cin, flashcard.subject);
@@ -87,7 +90,15 @@ int main(){
 
             db.editRegister(tables::Flashcards, ID, &flashcard);
             break;
+        
         case 5:
+            std::cin.ignore(); // Limpia el buffer
+            std::cout << "Enter the subject: ";
+            std::getline(std::cin, subject.subjectN);
+            db.insertRegister(tables::Subject, &subject);
+            break;
+
+        case 6:
             std::cout << "Exiting..." << std::endl;
             running = false;
             break;

@@ -30,6 +30,11 @@ struct GameData
     std::string range;
 };
 
+struct SubjectData
+{
+    std::string subjectN;
+};
+
 using FlashcarQA = std::vector<std::pair<std::string, std::string>>;
 class dataBaseManager
 {
@@ -72,8 +77,14 @@ private:
         "ID INTEGER PRIMARY KEY, "
         "Range TEXT);";
 
+    const char *createSubject =
+        "CREATE TABLE IF NOT EXISTS Subjects ("
+        "ID INTEGER PRIMARY KEY, "
+        "Subject TEXT"
+        ");";
+
     const std::string insertFlashcardQuery =
-        "INSERT INTO Flashcards (Question, Answer,Subject,Grade) VALUES (?, ?, ?,NULL);";
+        "INSERT INTO Flashcards (Question, Answer,Grade) VALUES (?, ?, NULL);";
 
     const std::string insertUsersQuery =
         "INSERT INTO Users (Username,Password) VALUES (?,?);";
@@ -81,5 +92,9 @@ private:
     const std::string insertGameQuery =
         "INSERT INTO Game (Range) VALUES (?);";
 
-
+    const std::string insertSubjectsQuery =
+        "INSERT INTO Subjects (Subject) "
+        "SELECT ? WHERE NOT EXISTS ("
+        "SELECT 1 FROM Subjects WHERE Subject = ?"
+        ");";
 };

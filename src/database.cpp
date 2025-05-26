@@ -11,11 +11,13 @@ void dataBaseManager::createTables(){
     sqlite3_open(this->DBNAME, &this->db);
 
     char *errorMsg = nullptr;
+    int rc;
 
     sqlite3_exec(this->db , this->createFlashcards, nullptr, nullptr, &errorMsg);
     sqlite3_exec(this->db, this->createUser , nullptr, nullptr, &errorMsg);
-    int result = sqlite3_exec(this->db, this->createGame , nullptr, nullptr, &errorMsg);
-    
+    sqlite3_exec(this->db, this->createGame , nullptr, nullptr, &errorMsg);
+    sqlite3_exec(this->db, this->createSubject , nullptr, nullptr, &errorMsg);
+
     sqlite3_close(this->db);
 
 }
@@ -39,7 +41,7 @@ void dataBaseManager::insertRegister(tables tableType, void *data)
 
         sqlite3_bind_text(stmt, 1, flashcard->question.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 2, flashcard->answer.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 3, flashcard->subject.c_str(), -1, SQLITE_STATIC);
+        
 
         break;
     }
@@ -60,6 +62,48 @@ void dataBaseManager::insertRegister(tables tableType, void *data)
         query = this->insertGameQuery;
         sqlite3_bind_text(stmt, 1, game->range.c_str(), -1, SQLITE_STATIC);
 
+        break;
+    }
+
+        case Subject: {
+        SubjectData *subject = static_cast<SubjectData *>(data);
+        
+        // Verify ifthe subject exits
+        std::string checkQuery = "SELECT Subject FROM Subjects WHERE Subject = ?;";
+        sqlite3_stmt *checkStmt = nullptr;
+        
+        rc = sqlite3_prepare_v2(this->db, checkQuery.c_str(), -1, &checkStmt, nullptr);
+        sqlite3_bind_text(checkStmt, 1, subject->subjectN.c_str(), -1, SQLITE_STATIC);
+        
+        if (sqlite3_step(checkStmt) == SQLITE_ROW) {
+            std::cout << "Subject '" << subject->subjectN << "' already exists!" << std::endl;
+            sqlite3_finalize(checkStmt);
+            break;
+        }
+        sqlite3_finalize(checkStmt);
+    
+        // If not exists proceed with the insertion
+        query = this->insertSubjectsQuery;
+        rc = sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
+        
+        if (rc != SQLITE_OK) {
+            std::cerr << "Error preparando la consulta: " << sqlite3_errmsg(db) << std::endl;
+            break;
+        }
+    
+        rc = sqlite3_bind_text(stmt, 1, subject->subjectN.c_str(), -1, SQLITE_STATIC);
+        if (rc != SQLITE_OK) {
+            std::cerr << "Error vinculando subject: " << sqlite3_errmsg(db) << std::endl;
+            break;
+        }
+    
+        rc = sqlite3_step(stmt);
+        if (rc == SQLITE_DONE) {
+            std::cout << "¡Subject '" << subject->subjectN << "' registrado exitosamente!" << std::endl;
+        } else {
+            std::cerr << "Error insertando subject: " << sqlite3_errmsg(db) << std::endl;
+        }
+        
         break;
     }
     
