@@ -3,6 +3,7 @@
 #include <vector>
 #include "flashcard.h"
 #include "database.h"
+#include <limits>
 
 int Menu(){
     
@@ -18,6 +19,7 @@ int Menu(){
     std::cout << "==============================================================" << "\n";
     std::cout << "Select an option: ";
     std::cin >> option;
+    std::cin.ignore();
     std::cout << "\n";
 
     return option;
@@ -43,27 +45,65 @@ int main(){
     {
         switch (option = Menu())
         {
-        case 1:
+        case 1:{
 
-            std::cout << "Enter the subject: " << "\n";
-            std::cin.ignore(); // Erase the buffer before getline
+            bool subjectExists = false;
+
+            
+            db.readRegister(tables::Subject);
+
+            std::cout << "Enter the subject: ";
             std::getline(std::cin, flashcard.subject);
+            
+            subjectExists = db.checkSubjectExists(flashcard.subject);
+            
 
-            std::cout << "Enter the question: " << "\n";
-            std::getline(std::cin, flashcard.question);
+            if (!subjectExists)
+            {
+                char option;
+                std::cout << "\nError: Subject '" << flashcard.subject << "' does not exist.";
+                continue;
+            }
+        
 
-            std::cout << "Enter the answer: " << "\n";
-            std::getline(std::cin, flashcard.answer);
+            else
+            {
+                std::cout << "Enter the question: ";
+                std::getline(std::cin, flashcard.question);
 
-            std::cout<< "\n";
+                std::cout << "Enter the answer: ";
+                std::getline(std::cin, flashcard.answer);
 
-            db.insertRegister(tables::Flashcards, &flashcard);
+                std::cout << "Enter the estimated time (in seconds): ";
+                std::string tempTime;
+                std::getline(std::cin, tempTime);
+
+                try
+                {
+                    flashcard.estimatedTime = std::stoi(tempTime); 
+                }
+                catch (const std::invalid_argument &e)
+                {
+                    std::cout << "Error: Invalid number\n";
+                    flashcard.estimatedTime = 0; 
+                }
+                catch (const std::out_of_range &e)
+                {
+                    std::cout << "Error: Out of range value\n";
+                    flashcard.estimatedTime = 0; 
+                }
+
+                std::cout << "\n";
+                db.insertRegister(tables::Flashcards, &flashcard);
+            }
 
             break;
+        }
         case 2:
             db.readRegister(tables::Flashcards,ID);
 
             break;
+        
         case 3:
             std::cout << "Insert the ID to delete " << "\n";
             std::cin >> ID;
@@ -72,6 +112,7 @@ int main(){
 
             db.deleteRegister(tables::Flashcards, ID);
             break;
+        
         case 4:
             std::cout << "Insert the ID to edit " << "\n";
             std::cin >> ID;
@@ -100,27 +141,26 @@ int main(){
             std::getline(std::cin, subject.subjectN);
             db.insertRegister(tables::Subject, &subject);
             break;
-
+        
         case 6:
 
             db.readRegister(tables::Subject);
             break;
-
+        
         case 7:
 
             std::cout << "Exiting..." << std::endl;
             running = false;
             break;
-
+        
 
         default:
             std::cout << "Invalid option. Please try again." << std::endl;
             std::cout << '\n';
 
             break;
-        }
-
+        
     }
-
+    }
     return 0;
 }

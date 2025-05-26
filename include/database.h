@@ -17,6 +17,8 @@ struct FlashcardData
     std::string question;
     std::string answer;
     std::string subject;
+    int triesCounter = 0;
+    int estimatedTime = 0;
 };
 
 struct UserData
@@ -48,6 +50,7 @@ public:
     void readRegister(tables tableType, std::string const &ID = "");
     void deleteRegister(tables tableType, std::string const &ID);
     void editRegister(tables tableType, std::string const &ID, void *newData);
+    bool checkSubjectExists(const std::string &subject);
 
     FlashcarQA retrieve_Flashcards(std::string &subject, int const &flashcardQuantity);
 
@@ -63,6 +66,8 @@ private:
         "Question TEXT, "
         "Answer TEXT, "
         "Grade INTEGER, "
+        "TriesCounter INTEGER, "
+        "EstimatedTime INTEGER, "
         "FOREIGN KEY(Subject) REFERENCES Subjects(Subject) "
         "ON DELETE CASCADE "
         "ON UPDATE CASCADE"
@@ -87,7 +92,8 @@ private:
         ");";
 
     const std::string insertFlashcardQuery =
-        "INSERT INTO Flashcards (Subject, Question, Answer, Grade) VALUES (?, ?, ?, NULL);";
+        "INSERT INTO Flashcards (Subject, Question, Answer, Grade, TriesCounter, EstimatedTime) "
+        "VALUES (?, ?, ?, NULL, 0, ?);";
 
     const std::string insertUsersQuery =
         "INSERT INTO Users (Username,Password) VALUES (?,?);";

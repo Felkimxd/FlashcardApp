@@ -57,6 +57,8 @@ void dataBaseManager::insertRegister(tables tableType, void *data)
             sqlite3_bind_text(stmt, 1, flashcard->subject.c_str(), -1, SQLITE_STATIC);
             sqlite3_bind_text(stmt, 2, flashcard->question.c_str(), -1, SQLITE_STATIC);
             sqlite3_bind_text(stmt, 3, flashcard->answer.c_str(), -1, SQLITE_STATIC);
+            sqlite3_bind_int(stmt, 4, flashcard->estimatedTime);
+
         }
 
         sqlite3_finalize(checkStmt);
@@ -87,7 +89,7 @@ void dataBaseManager::insertRegister(tables tableType, void *data)
 
         SubjectData *subject = static_cast<SubjectData *>(data);
 
-        // Verify ifthe subject exits
+        // Verify if the subject exits
         std::string checkQuery = "SELECT Subject FROM Subjects WHERE Subject = ?;";
         sqlite3_stmt *checkStmt = nullptr;
 
@@ -334,4 +336,28 @@ void dataBaseManager::deleteRegister(tables tableType, const std::string &ID)
 
     sqlite3_finalize(stmt);
     sqlite3_close(this->db);
+
+    
+}
+
+bool dataBaseManager::checkSubjectExists(const std::string& subject) {
+    sqlite3_stmt* stmt = nullptr;
+    std::string query = "SELECT 1 FROM Subjects WHERE LOWER(Subject) = LOWER(?);";
+    bool exists = false;
+    
+    sqlite3_open(this->DBNAME, &this->db);
+
+    int rc = sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
+
+    if (rc == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, subject.c_str(), -1, SQLITE_STATIC);
+        
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            exists = true;
+        }
+    }
+    
+    sqlite3_finalize(stmt);
+    sqlite3_close(this->db);
+    return exists;
 }
