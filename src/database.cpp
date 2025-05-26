@@ -230,7 +230,6 @@ void dataBaseManager::editRegister(tables tableType, const std::string &ID, void
     {
         FlashcardData *flashcard = static_cast<FlashcardData *>(newData);
     
-        // Si se está editando el subject, verificar que exista
         if (!flashcard->subject.empty()) {
             std::string checkQuery = "SELECT 1 FROM Subjects WHERE Subject = ?;";
             sqlite3_stmt *checkStmt = nullptr;
@@ -246,23 +245,22 @@ void dataBaseManager::editRegister(tables tableType, const std::string &ID, void
             sqlite3_finalize(checkStmt);
             query = "UPDATE Flashcards SET Subject = ? WHERE ID = ?;";
         }
-        // Si se está editando la pregunta
+
         else if (!flashcard->question.empty()) {
             query = "UPDATE Flashcards SET Question = ? WHERE ID = ?;";
         }
-        // Si se está editando la respuesta
         else if (!flashcard->answer.empty()) {
             query = "UPDATE Flashcards SET Answer = ? WHERE ID = ?;";
         }
-        // Si se está editando el tiempo estimado
         else if (flashcard->estimatedTime != 0)
         {
             query = "UPDATE Flashcards SET EstimatedTime = ? WHERE ID = ?;";
         }
 
         rc = sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
-    
-        // Vincular el valor correspondiente según el campo que se está editando
+
+        std::cout << rc << std::endl;
+
         if (!flashcard->subject.empty()) {
             sqlite3_bind_text(stmt, 1, flashcard->subject.c_str(), -1, SQLITE_STATIC);
         }
@@ -347,6 +345,15 @@ void dataBaseManager::deleteRegister(tables tableType, const std::string &ID)
     case Game:
     {
         query = "DELETE FROM Game WHERE ID = ?;";
+
+        sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
+        sqlite3_bind_text(stmt, 1, ID.c_str(), -1, SQLITE_STATIC);
+        break;
+    }
+    
+    case Subject:
+    {
+        query = "DELETE FROM Subjects WHERE ID = ?;";
 
         sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
         sqlite3_bind_text(stmt, 1, ID.c_str(), -1, SQLITE_STATIC);

@@ -15,7 +15,8 @@ int Menu(){
     std::cout << "4. Edit Flashcard" << std::endl;
     std::cout << "5. Register a Subject" << std::endl;
     std::cout << "6. Show Subjects" << std::endl;
-    std::cout << "7. Exit" << std::endl;
+    std::cout << "7. Delete Subjects" << std::endl;
+    std::cout << "8. Exit" << std::endl;
     std::cout << "==============================================================" << "\n";
     std::cout << "Select an option: ";
     std::cin >> option;
@@ -152,7 +153,7 @@ int main(){
             case 1:
 
                 db.readRegister(tables::Subject);
-                
+
                 std::cout << "Enter the subject: " << "\n";
                 std::getline(std::cin, flashcard.subject);
                 break;
@@ -201,7 +202,6 @@ int main(){
         case 5:
 
             db.readRegister(tables::Subject);
-            std::cin.ignore(); // Limpia el buffer
             std::cout << "Enter the subject: ";
             std::getline(std::cin, subject.subjectN);
             db.insertRegister(tables::Subject, &subject);
@@ -212,7 +212,17 @@ int main(){
             db.readRegister(tables::Subject);
             break;
         
-        case 7:
+            case 7:
+
+            db.readRegister(tables::Subject);
+
+            std::cout << "Insert the ID to delete " << "\n";
+            std::cin >> ID;
+
+            db.deleteRegister(tables::Subject, ID);
+            break;
+        
+        case 8:
 
             std::cout << "Exiting..." << std::endl;
             running = false;
