@@ -8,15 +8,15 @@ enum tables
     Flashcards = 1,
     Users = 2,
     Game = 3,
-    Subject = 4,
+    Deck = 4,
 
 };
 
 struct FlashcardData
 {
+    std::string corrTable;
     std::string question;
     std::string answer;
-    std::string subject;
     int triesCounter = 0;
     int estimatedTime = 0;
 };
@@ -32,9 +32,9 @@ struct GameData
     std::string range;
 };
 
-struct SubjectData
+struct DeckData
 {
-    std::string subjectN;
+    std::string DeckN;
 };
 
 using FlashcarQA = std::vector<std::pair<std::string, std::string>>;
@@ -47,10 +47,12 @@ public:
     sqlite3 *db;
 
     void insertRegister(tables tabletype, void *data);
-    void readRegister(tables tableType, std::string const &ID = "");
-    void deleteRegister(tables tableType, std::string const &ID);
-    void editRegister(tables tableType, std::string const &ID, void *newData);
-    bool checkSubjectExists(const std::string &subject);
+    void readRegister(tables tableType, std::string const &ID = "", std::string const &deckName = "");
+    void deleteRegister(tables tableType, std::string const &ID, std::string const &deckName = "");
+    void editRegister(tables tableType, std::string const &ID, void *newData, const std::string &deckName = "");
+
+    void createDeckTable(const std::string &deckName);
+    bool checkDeckExists(const std::string &deckName);
 
     FlashcarQA retrieve_Flashcards(std::string &subject, int const &flashcardQuantity);
 
@@ -59,19 +61,15 @@ private:
 
     const char *DBNAME = "C:\\CARPETAS IMPORTANTES\\Carpetas\\FlashcardApp\\archives\\data\\FlashcardApp.db";
 
-    const char *createFlashcards =
-        "CREATE TABLE IF NOT EXISTS Flashcards ("
-        "ID INTEGER PRIMARY KEY, "
-        "Subject TEXT, "
-        "Question TEXT, "
-        "Answer TEXT, "
-        "Grade INTEGER, "
-        "TriesCounter INTEGER, "
-        "EstimatedTime INTEGER, "
-        "FOREIGN KEY(Subject) REFERENCES Subjects(Subject) "
-        "ON DELETE CASCADE "
-        "ON UPDATE CASCADE"
-        ");";
+    // const char *createDeckTableTemplate =
+    //     "CREATE TABLE IF NOT EXISTS (?) ("
+    //     "ID INTEGER PRIMARY KEY, "
+    //     "Question TEXT NOT NULL, "
+    //     "Answer TEXT NOT NULL, "
+    //     "Grade INTEGER DEFAULT 0, "
+    //     "TriesCounter INTEGER DEFAULT 0, "
+    //     "EstimatedTime INTEGER DEFAULT 0"
+    //     ");";
 
     const char *createUser =
         "CREATE TABLE IF NOT EXISTS User ("
@@ -85,15 +83,15 @@ private:
         "ID INTEGER PRIMARY KEY, "
         "Range TEXT);";
 
-    const char *createSubject =
-        "CREATE TABLE IF NOT EXISTS Subjects ("
+    const char *createDecks =
+        "CREATE TABLE IF NOT EXISTS Decks ("
         "ID INTEGER PRIMARY KEY, "
-        "Subject TEXT"
+        "Deck TEXT UNIQUE NOT NULL"
         ");";
 
-    const std::string insertFlashcardQuery =
-        "INSERT INTO Flashcards (Subject, Question, Answer, Grade, TriesCounter, EstimatedTime) "
-        "VALUES (?, ?, ?, NULL, 0, ?);";
+    const std::string insertFlashcardQueryTemplate =
+        "INSERT INTO (?) (Question, Answer, Grade, TriesCounter, EstimatedTime) "
+        "VALUES (?, ?, NULL, 0, ?);";
 
     const std::string insertUsersQuery =
         "INSERT INTO Users (Username,Password) VALUES (?,?);";
