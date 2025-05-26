@@ -105,6 +105,9 @@ int main(){
             break;
         
         case 3:
+
+            db.readRegister(tables::Flashcards);
+            
             std::cout << "Insert the ID to delete " << "\n";
             std::cin >> ID;
             std::cin.ignore();

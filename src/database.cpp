@@ -151,6 +151,7 @@ void dataBaseManager::readRegister(tables tableType, std::string const &ID)
             std::cout << "Question: " << sqlite3_column_text(stmt, 2) << std::endl;
             std::cout << "Answer: " << sqlite3_column_text(stmt, 3) << std::endl;
             std::cout << "Grade: " << sqlite3_column_int(stmt, 4) << std::endl;
+            std::cout << "Estimated Time (Seconds): " << sqlite3_column_int(stmt, 6) << std::endl;
             std::cout << "\n";
         }
         break;
