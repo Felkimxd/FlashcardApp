@@ -5,9 +5,27 @@
 #include "database.h"
 #include <limits>
 
+#include <chrono>
+#include <thread>
 
-int Menu(){
+void clearScreen()
+{
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
 
+void pauseConsole(int seconds = 2)
+{
+    std::cout << "\nPress enter to continue...";
+    std::cin.get();
+    clearScreen();
+}
+
+int Menu()
+{
     int option = 0;
     std::cout << "\n======================== Flashcard App =======================" << std::endl;
     std::cout << "1. Select Deck" << std::endl;
@@ -21,14 +39,14 @@ int Menu(){
     std::cout << "\n";
 
     return option;
-
 }
 
-int Menu_Decks()
+int Menu_Decks(const std::string &activeDeck)
 {
-
+    clearScreen();
     int option = 0;
     std::cout << "\n======================== Deck Options =======================" << std::endl;
+    std::cout << "Active Deck: " << activeDeck << std::endl;
     std::cout << "1. Add Flashcard" << std::endl;
     std::cout << "2. Show Flashcards" << std::endl;
     std::cout << "3. Delete Flashcard" << std::endl;
@@ -74,36 +92,43 @@ int main()
 
     int option = 0;
 
-    while (running1){
+    while (running1)
+    {
 
         DeckData deck;
         std::string deckName;
+        
+        clearScreen();
+        db.readRegister(tables::Deck);
 
         switch (option = Menu())
         {
-        case 1:{
+        case 1:
+        {
 
-            bool deckExists = false;                                                        
-            
+            bool deckExists = false;
+            std::string selectedDeckName;
+
             db.readRegister(tables::Deck);
 
-            std::cout << "Enter Deck Name " << "\n";
-            std::getline(std::cin, deckName);
+            std::cout << "Enter Deck ID: ";
+            std::getline(std::cin, ID);
 
-            deckExists = db.checkDeckExists(deckName);
-
-            std::cout << deckExists << std ::endl;
-            
-            if (!deckExists){
-
-                std::cout << "\nError: Deck '" << deckName << "' does not exist.";
+            if (db.getDeckName(ID, selectedDeckName))
+            {
+                deckName = selectedDeckName;
                 running1 = true;
-            }
-            else{
-
                 running2 = true;
+                std::cout << "\nDeck '" << deckName << "' selected successfully!" << std::endl;
             }
-            
+            else
+            {
+                running1 = true;
+                running2 = false;
+                std::cout << "\nError: Deck with ID '" << ID << "' does not exist.\n";
+            }
+
+            pauseConsole();
             break;
         }
 
@@ -116,10 +141,11 @@ int main()
             std::cout << "\n";
 
             db.deleteRegister(tables::Deck, ID);
-
+            pauseConsole();
             break;
 
-        case 3:{
+        case 3:
+        {
 
             std::string DeckName;
 
@@ -127,6 +153,7 @@ int main()
             std::getline(std::cin, DeckName);
 
             db.createDeckTable(DeckName);
+            pauseConsole();
             break;
         }
         case 4:
@@ -135,7 +162,7 @@ int main()
             running1 = false;
             running2 = false;
             break;
-        
+
         default:
             break;
         }
@@ -147,9 +174,7 @@ int main()
             GameData game;
             DeckData deck;
 
-            flashcard.corrTable = deckName;
-
-            switch (option = Menu_Decks())
+            switch (option = Menu_Decks(deckName))
             {
             case 1:
             {
@@ -179,27 +204,32 @@ int main()
                 }
 
                 std::cout << "\n";
-                db.insertRegister(tables::Flashcards, &flashcard);
+                db.insertRegister(tables::Flashcards, &flashcard, deckName);
+                std::cout << "\nFlashcard added successfully to deck '" << deckName << "'!" << std::endl;
+                pauseConsole();
                 break;
             }
             case 2:
-                db.readRegister(tables::Flashcards,"", deckName);
+                std::cout << "\nShowing flashcards from deck '" << deckName << "':" << std::endl;
+                db.readRegister(tables::Flashcards, "", deckName);
+                pauseConsole();
                 break;
             case 3:
             {
-                db.readRegister(tables::Flashcards,"", deckName);
-                std::cout << "Insert the ID to delete\n";
+                db.readRegister(tables::Flashcards, "", deckName);
+                std::cout << "Insert the ID to delete from deck: \n";
                 std::cin >> ID;
                 std::cin.ignore();
                 std::cout << "\n";
-                db.deleteRegister(tables::Flashcards, ID,deckName);
+                db.deleteRegister(tables::Flashcards, ID, deckName);
+                pauseConsole();
                 break;
             }
             case 4:
             {
                 int parameters_option;
                 db.readRegister(tables::Flashcards, "", deckName);
-                std::cout << "Insert the ID to edit\n";
+                std::cout << "Insert the ID to edit from deck: \n";
                 std::cin >> ID;
                 std::cin.ignore();
 

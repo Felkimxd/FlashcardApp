@@ -101,7 +101,7 @@ void dataBaseManager::createDeckTable(const std::string &deckName)
     sqlite3_close(this->db);
 }
 
-void dataBaseManager::insertRegister(tables tableType, void *data)
+void dataBaseManager::insertRegister(tables tableType, void *data, const std::string &deckName)
 {
 
     sqlite3_stmt *stmt = nullptr;
@@ -115,15 +115,18 @@ void dataBaseManager::insertRegister(tables tableType, void *data)
 
         FlashcardData *flashcard = static_cast<FlashcardData *>(data);
 
+        std::string insertFlashcardQueryTemplate =
+        "INSERT INTO '"+ deckName +"' (Question, Answer, Grade, TriesCounter, EstimatedTime) "
+        "VALUES (?, ?, NULL, 0, ?);";
         
-        query = this->insertFlashcardQueryTemplate;
+
+        query = insertFlashcardQueryTemplate;
 
         sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
 
-        sqlite3_bind_text(stmt, 1,  flashcard->corrTable.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 2, flashcard->question.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 3, flashcard->answer.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_int(stmt, 4, flashcard->estimatedTime);
+        sqlite3_bind_text(stmt, 1, flashcard->question.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 2, flashcard->answer.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_int(stmt, 3, flashcard->estimatedTime);
 
         break;
     }
@@ -294,6 +297,31 @@ void dataBaseManager::readRegister(tables tableType, std::string const &ID, std:
     sqlite3_close(this->db);
 }
 
+bool dataBaseManager::getDeckName(const std::string &ID, std::string &deckName)
+{
+    sqlite3_stmt *stmt = nullptr;
+    std::string query = "SELECT Deck FROM Decks WHERE ID = ?;";
+    bool exists = false;
+
+    sqlite3_open(this->DBNAME, &this->db);
+
+    if (sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr) == SQLITE_OK)
+    {
+        sqlite3_bind_text(stmt, 1, ID.c_str(), -1, SQLITE_STATIC);
+
+        if (sqlite3_step(stmt) == SQLITE_ROW)
+        {
+            deckName = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 0));
+            exists = true;
+        }
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(this->db);
+
+    return exists;
+}
+
 void dataBaseManager::editRegister(tables tableType, const std::string &ID, void *newData, const std::string &deckName)
 {
     sqlite3_stmt *stmt = nullptr;
@@ -310,14 +338,14 @@ void dataBaseManager::editRegister(tables tableType, const std::string &ID, void
     
 
         if (!flashcard->question.empty()) {
-            query = "UPDATE Flashcards SET Question = ? WHERE ID = ?;";
+            query = "UPDATE '"+ deckName +"' SET Question = ? WHERE ID = ?;";
         }
         else if (!flashcard->answer.empty()) {
-            query = "UPDATE Flashcards SET Answer = ? WHERE ID = ?;";
+            query = "UPDATE '" + deckName + "' SET Answer = ? WHERE ID = ?;";
         }
         else if (flashcard->estimatedTime != 0)
         {
-            query = "UPDATE Flashcards SET EstimatedTime = ? WHERE ID = ?;";
+            query = "UPDATE '"+ deckName +"' SET EstimatedTime = ? WHERE ID = ?;";
         }
 
         rc = sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
@@ -335,6 +363,10 @@ void dataBaseManager::editRegister(tables tableType, const std::string &ID, void
         }
     
         sqlite3_bind_text(stmt, 2, ID.c_str(), -1, SQLITE_STATIC);
+
+        if (sqlite3_step(stmt) == SQLITE_DONE) {
+            std::cout << "Flashcard updated successfully in deck '" << deckName << "'!" << std::endl;
+        }
         break;
     }
 
@@ -394,15 +426,19 @@ void dataBaseManager::deleteRegister(tables tableType, const std::string &ID, st
         }
         else
         {
-            std::cout << "Error: Debe especificar un deck para borrar flashcards.\n";
+            std::cout << "Error: Specify the deck.\n";
             return;
+        }
+
+        if (sqlite3_step(stmt) == SQLITE_DONE) {
+            std::cout << "Flashcard deleted successfully from deck '" << deckName << "'!" << std::endl;
         }
 
         rc = sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
 
         if (rc != SQLITE_OK)
         {
-            std::cout << "Error al acceder al deck: " << sqlite3_errmsg(db) << std::endl;
+            std::cout << "Error to acces the deck: " << sqlite3_errmsg(db) << std::endl;
             return;
         }
 
@@ -468,17 +504,22 @@ void dataBaseManager::deleteRegister(tables tableType, const std::string &ID, st
 
                         if (sqlite3_step(stmt) == SQLITE_DONE)
                         {
-                            std::cout << "Deck '" << deckToDelete << "' borrado exitosamente!" << std::endl;
+                            std::cout << "Deck '" << deckToDelete << "' erased succesfully!" << std::endl;
                         }
                     }
                 }
                 else
                 {
-                    std::cout << "Error al borrar tabla: " << errorMsg << std::endl;
+                    std::cout << "Error at the moment of erase the table: " << errorMsg << std::endl;
                     sqlite3_free(errorMsg);
                 }
             }
         }
+
+        if (sqlite3_step(stmt) == SQLITE_DONE) {
+            std::cout << "Deck '" << deckToDelete << "' and all its flashcards deleted successfully!" << std::endl;
+        }
+
         break;
     }
 

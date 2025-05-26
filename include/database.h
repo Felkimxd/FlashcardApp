@@ -14,7 +14,6 @@ enum tables
 
 struct FlashcardData
 {
-    std::string corrTable;
     std::string question;
     std::string answer;
     int triesCounter = 0;
@@ -46,13 +45,14 @@ public:
 
     sqlite3 *db;
 
-    void insertRegister(tables tabletype, void *data);
+    void insertRegister(tables tabletype, void *data, std::string const &deckName = "");
     void readRegister(tables tableType, std::string const &ID = "", std::string const &deckName = "");
     void deleteRegister(tables tableType, std::string const &ID, std::string const &deckName = "");
     void editRegister(tables tableType, std::string const &ID, void *newData, const std::string &deckName = "");
 
+    bool getDeckName(const std::string &ID, std::string &deckName);
     void createDeckTable(const std::string &deckName);
-    bool checkDeckExists(const std::string &deckName);
+    bool checkDeckExists(std::string const &ID);
 
     FlashcarQA retrieve_Flashcards(std::string &subject, int const &flashcardQuantity);
 
@@ -89,9 +89,9 @@ private:
         "Deck TEXT UNIQUE NOT NULL"
         ");";
 
-    const std::string insertFlashcardQueryTemplate =
-        "INSERT INTO (?) (Question, Answer, Grade, TriesCounter, EstimatedTime) "
-        "VALUES (?, ?, NULL, 0, ?);";
+    // const std::string insertFlashcardQueryTemplate =
+    //     "INSERT INTO (?) (Question, Answer, Grade, TriesCounter, EstimatedTime) "
+    //     "VALUES (?, ?, NULL, 0, ?);";
 
     const std::string insertUsersQuery =
         "INSERT INTO Users (Username,Password) VALUES (?,?);";
