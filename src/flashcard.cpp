@@ -3,20 +3,13 @@
 #include <stdexcept>
 #include <iostream>
 
-Flashcard::Flashcard(std::string question, std::string answer) {
+Flashcard::Flashcard(int id,const std::string &question, const std::string &answer, float grade, int triesCounter, int estimatedTimeSeconds) {
+    this->id = id;
     this->question = question;
     this->answer = answer;
-    this->grade = 0;
-    this->triesCounter = 0;
-    this->estimatedTimeSeconds = 0;
-};
-
-void Flashcard::setQuestion(std::string const &question){
-    this->question = question;
-};
-
-void Flashcard::setAnswer(std::string const &answer) {
-    this->answer = answer;
+    this->grade = grade;
+    this->triesCounter = triesCounter;
+    this->estimatedTimeSeconds = estimatedTimeSeconds;
 };
 
 void Flashcard::gradeCalc(float const &timeTakeIt, float const &userFeedback)
@@ -47,10 +40,6 @@ void Flashcard::IncrementTries() {
     this->triesCounter ++;
 };
 
-void Flashcard::updateEstimatedTime(int const &stimatedTime) {
-    this->estimatedTimeSeconds = stimatedTime;
-};
-
 std::string const Flashcard::getQuestion() {
 
     return this->question;
@@ -59,4 +48,22 @@ std::string const Flashcard::getQuestion() {
 std::string const Flashcard::getAnswer(){
 
     return this->answer;
+}
+
+int const Flashcard::getID(){
+
+    return this->id;
+}
+float const Flashcard::getGrade(){
+
+    return this->grade;
+}
+int const Flashcard::gettriesCounter(){
+
+    return this->triesCounter;
+}
+
+int const Flashcard::getestimatedTIme(){
+
+    return this->estimatedTimeSeconds;
 }

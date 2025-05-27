@@ -1,22 +1,19 @@
+#ifndef FLASHCARD_H
+#define FLASHCARD_H
+
 #include <string>
 
 class Flashcard{
 
     public:
-
-        Flashcard(std::string question, std::string answer);
-
-        void updateEstimatedTime(int const &estimatedTime);
-        void setQuestion(std::string const &question);
-        void setAnswer(std::string const &answer);
-        
+        Flashcard(int id, const std::string &question, const std::string  &answer, float grade, int triesCounter, int estimatedTimeSeconds);
 
         std::string const getQuestion();
         std::string const getAnswer();
-        std::string const getID();
-        std::string const getGrade();
-        std::string const gettriesCounter();
-        std::string const getestimatedTIme();
+        int const getID();
+        float const getGrade();
+        int const gettriesCounter();
+        int const getestimatedTIme();
 
     private:
         void gradeCalc(float const &timeTakeIt, float const &userFeedback);
@@ -31,3 +28,5 @@ class Flashcard{
 
         
 };
+
+#endif // FLASHCARD_H

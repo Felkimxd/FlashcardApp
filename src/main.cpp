@@ -1,9 +1,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "flashcard.h"
 #include "database.h"
 #include <limits>
+#include "flashcard.h"
 
 #include <chrono>
 #include <thread>
@@ -26,6 +26,7 @@ void pauseConsole(int seconds = 2)
 
 int Menu()
 {
+    clearScreen();
     int option = 0;
     std::cout << "\n======================== Flashcard App =======================" << std::endl;
     std::cout << "1. Select Deck" << std::endl;
@@ -98,9 +99,6 @@ int main()
 
         DeckData deck;
         std::string deckName;
-        
-        clearScreen();
-        db.readRegister(tables::Deck);
 
         switch (option = Menu())
         {
@@ -175,13 +173,19 @@ int main()
             GameData game;
             DeckData deck;
 
+            std::cout << "xdd" << std::endl;
             switch (option = Menu_Decks(deckName))
             {
             case 1: 
             {
-                FlashcarQA vector = db.retrieve_Flashcards(deckName);
+
+                clearScreen();
+                std::vector<Flashcard> flashcardVector = db.retrieve_Flashcards(deckName);
 
                 
+                pauseConsole();
+
+                break;
             }
             case 2:
             {

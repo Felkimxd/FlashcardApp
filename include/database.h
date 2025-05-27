@@ -1,3 +1,6 @@
+#ifndef DATABASE_H
+#define DATABASE_H
+
 #include <string>
 #include "sqlite3.h"
 #include <vector>
@@ -36,8 +39,6 @@ struct DeckData
     std::string DeckN;
 };
 
-using FlashcarQA = std::vector<Flashcard>;
-
 class dataBaseManager
 {
 
@@ -55,7 +56,7 @@ public:
     void createDeckTable(const std::string &deckName);
     bool checkDeckExists(std::string const &ID);
 
-    FlashcarQA retrieve_Flashcards(std::string &deckName);
+    std::vector<Flashcard> retrieve_Flashcards(std::string &deckName);
 
 private:
     void createTables();
@@ -106,3 +107,5 @@ private:
         "SELECT 1 FROM Subjects WHERE Subject = ?"
         ");";
 };
+
+#endif // DATABASE_H

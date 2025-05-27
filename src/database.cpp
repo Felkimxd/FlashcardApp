@@ -536,32 +536,53 @@ void dataBaseManager::deleteRegister(tables tableType, const std::string &ID, st
     
 }
 
-FlashcarQA dataBaseManager::retrieve_Flashcards(std::string &deckName)
+std::vector<Flashcard> dataBaseManager::retrieve_Flashcards(std::string &deckName)
 {
-    FlashcarQA flashcards;
+    std::vector<Flashcard> flashcards;
     sqlite3_stmt *stmt = nullptr;
     std::string query;
 
-    
-    query = "SELECT * FROM '" + deckName + "';";
-    
-    if (sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr) == SQLITE_OK)
+    if (sqlite3_open(this->DBNAME, &this->db) != SQLITE_OK)
     {
-       
+        sqlite3_close(this->db);
+        return flashcards; 
+    }
+
+    query = "SELECT * FROM \"" + deckName + "\";"; 
+
+    int rc = sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
+    if (rc == SQLITE_OK)
+    {
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
-            Flashcard card;
-            card.id = sqlite3_column_int(stmt, 0);
-            card.question = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
-            card.answer = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
-            card.grade = sqlite3_column_int(stmt, 3);
-            card.triesCounter = sqlite3_column_int(stmt, 4);
-            card.estimatedTime = sqlite3_column_int(stmt, 5);
+            
+            const char *questionText = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
+            const char *answerText = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
 
-            flashcards.push_back(card);
+            std::string question = questionText ? std::string(questionText) : "";
+            std::string answer = answerText ? std::string(answerText) : "";
+
+            Flashcard card(
+                sqlite3_column_int(stmt, 0),    // ID
+                question,                       // Question
+                answer,                         // Answer
+                sqlite3_column_double(stmt, 3), // Grade
+                sqlite3_column_int(stmt, 4),    // TriesCounter
+                sqlite3_column_int(stmt, 5)     // EstimatedTime
+            );
+
+            flashcards.push_back(std::move(card));
+        }
+        sqlite3_finalize(stmt);
+    }
+    else
+    {
+        if (stmt)
+        {
+            sqlite3_finalize(stmt);
         }
     }
 
-    sqlite3_finalize(stmt);
+    sqlite3_close(this->db);
     return flashcards;
 }
