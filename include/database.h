@@ -24,12 +24,6 @@ struct FlashcardData
     float estimatedTime = 0;
 };
 
-struct UserData
-{
-    std::string username;
-    std::string password;
-};
-
 struct GameData
 {
     std::string range;
@@ -62,14 +56,9 @@ public:
 private:
     void createTables();
 
-    const char *DBNAME = "C:\\CARPETAS IMPORTANTES\\Carpetas\\FlashcardApp\\archives\\data\\FlashcardApp.db";
+    const std::string Username;
 
-    const char *createUser =
-        "CREATE TABLE IF NOT EXISTS User ("
-        "ID INTEGER PRIMARY KEY, "
-        "Username TEXT, "
-        "Password TEXT"
-        ");";
+    const char *DBNAME = "C:\\CARPETAS IMPORTANTES\\Carpetas\\FlashcardApp\\archives\\data\\Flashcards.db";
 
     const char *createGame =
         "CREATE TABLE IF NOT EXISTS Game ("
@@ -95,4 +84,4 @@ private:
         ");";
 };
 
-#endif // DATABASE_H
+#endif 

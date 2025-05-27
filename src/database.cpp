@@ -12,7 +12,6 @@ void dataBaseManager::createTables(){
 
     char *errorMsg = nullptr;
 
-    sqlite3_exec(this->db, this->createUser , nullptr, nullptr, &errorMsg);
     sqlite3_exec(this->db, this->createGame , nullptr, nullptr, &errorMsg);
     sqlite3_exec(this->db, this->createDecks , nullptr, nullptr, &errorMsg);
 
@@ -131,16 +130,6 @@ void dataBaseManager::insertRegister(tables tableType, void *data, const std::st
         break;
     }
         
-    case Users:{
-        UserData *user = static_cast<UserData *>(data);
-        query = this->insertUsersQuery;
-        sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
-
-        sqlite3_bind_text(stmt, 1, user->username.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 2, user->password.c_str(), -1, SQLITE_STATIC);
-
-        break;
-    }
     case Game:{
 
         GameData* game = static_cast<GameData*>(data);
@@ -377,18 +366,6 @@ void dataBaseManager::editRegister(tables tableType, const std::string &ID, void
         break;
     }
 
-    case Users:
-    {
-        UserData *user = static_cast<UserData *>(newData);
-        query = "UPDATE User SET Username = ?, Password = ? WHERE ID = ?;";
-
-        sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
-
-        sqlite3_bind_text(stmt, 1, user->username.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 2, user->password.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 3, ID.c_str(), -1, SQLITE_STATIC);
-        break;
-    }
 
     case Game:
     {

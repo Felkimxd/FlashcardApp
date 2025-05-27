@@ -84,7 +84,7 @@ int Menu_Decks_Parameters()
 
 int main()
 {
-
+    
     dataBaseManager db;
 
     std::string ID;
@@ -170,7 +170,6 @@ int main()
         while (running2)
         {
             FlashcardData flashcardData;
-            UserData user;
             GameData game;
             DeckData deck;
 
