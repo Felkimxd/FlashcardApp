@@ -47,11 +47,12 @@ int Menu_Decks(const std::string &activeDeck)
     int option = 0;
     std::cout << "\n======================== Deck Options =======================" << std::endl;
     std::cout << "Active Deck: " << activeDeck << std::endl;
-    std::cout << "1. Add Flashcard" << std::endl;
-    std::cout << "2. Show Flashcards" << std::endl;
-    std::cout << "3. Delete Flashcard" << std::endl;
-    std::cout << "4. Edit Flashcard" << std::endl;
-    std::cout << "5. Exit" << std::endl;
+    std::cout << "1. BEGIN A STUDY SESSION" << std::endl;
+    std::cout << "2. Add Flashcard" << std::endl;
+    std::cout << "3. Show Flashcards" << std::endl;
+    std::cout << "4. Delete Flashcard" << std::endl;
+    std::cout << "5. Edit Flashcard" << std::endl;
+    std::cout << "6. Exit" << std::endl;
     std::cout << "==============================================================" << "\n";
     std::cout << "Select an option: ";
     std::cin >> option;
@@ -176,7 +177,13 @@ int main()
 
             switch (option = Menu_Decks(deckName))
             {
-            case 1:
+            case 1: 
+            {
+                FlashcarQA vector = db.retrieve_Flashcards(deckName);
+
+                
+            }
+            case 2:
             {
                 std::cout << "Enter the question: ";
                 std::getline(std::cin, flashcard.question);
@@ -209,12 +216,12 @@ int main()
                 pauseConsole();
                 break;
             }
-            case 2:
+            case 3:
                 std::cout << "\nShowing flashcards from deck '" << deckName << "':" << std::endl;
                 db.readRegister(tables::Flashcards, "", deckName);
                 pauseConsole();
                 break;
-            case 3:
+            case 4:
             {
                 db.readRegister(tables::Flashcards, "", deckName);
                 std::cout << "Insert the ID to delete from deck: \n";
@@ -225,7 +232,7 @@ int main()
                 pauseConsole();
                 break;
             }
-            case 4:
+            case 5:
             {
                 int parameters_option;
                 db.readRegister(tables::Flashcards, "", deckName);
@@ -272,7 +279,7 @@ int main()
                 db.editRegister(tables::Flashcards, ID, &flashcard, deckName);
                 break;
             }
-            case 5:
+            case 6:
                 std::cout << "Exiting..." << std::endl;
                 running2 = false;
                 break;

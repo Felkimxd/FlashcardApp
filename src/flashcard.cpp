@@ -8,7 +8,7 @@ Flashcard::Flashcard(std::string question, std::string answer) {
     this->answer = answer;
     this->grade = 0;
     this->triesCounter = 0;
-    this->stimatedTimeSeconds = 0;
+    this->estimatedTimeSeconds = 0;
 };
 
 void Flashcard::setQuestion(std::string const &question){
@@ -26,12 +26,12 @@ void Flashcard::gradeCalc(float const &timeTakeIt, float const &userFeedback)
 
     try
     {   
-        if (this->stimatedTimeSeconds == 0)
+        if (this->estimatedTimeSeconds == 0)
         {
             throw std::domain_error("The time to solve the question is 0. Please check this");
         }
 
-        normalizedTime = std::max(0.0, 1.0 - (timeTakeIt / this->stimatedTimeSeconds));
+        normalizedTime = std::max(0.0, 1.0 - (timeTakeIt / this->estimatedTimeSeconds));
 
         finalScore = 0.5f * normalizedTime + 0.5f * userFeedback;
     }
@@ -43,12 +43,12 @@ void Flashcard::gradeCalc(float const &timeTakeIt, float const &userFeedback)
     this->grade = finalScore;
 };
 
-void Flashcard::addCounter() {
+void Flashcard::IncrementTries() {
     this->triesCounter ++;
 };
 
-void Flashcard::setTime(int const &stimatedTime) {
-    this->stimatedTimeSeconds = stimatedTime;
+void Flashcard::updateEstimatedTime(int const &stimatedTime) {
+    this->estimatedTimeSeconds = stimatedTime;
 };
 
 std::string const Flashcard::getQuestion() {

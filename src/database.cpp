@@ -535,3 +535,33 @@ void dataBaseManager::deleteRegister(tables tableType, const std::string &ID, st
 
     
 }
+
+FlashcarQA dataBaseManager::retrieve_Flashcards(std::string &deckName)
+{
+    FlashcarQA flashcards;
+    sqlite3_stmt *stmt = nullptr;
+    std::string query;
+
+    
+    query = "SELECT * FROM '" + deckName + "';";
+    
+    if (sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr) == SQLITE_OK)
+    {
+       
+        while (sqlite3_step(stmt) == SQLITE_ROW)
+        {
+            Flashcard card;
+            card.id = sqlite3_column_int(stmt, 0);
+            card.question = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
+            card.answer = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
+            card.grade = sqlite3_column_int(stmt, 3);
+            card.triesCounter = sqlite3_column_int(stmt, 4);
+            card.estimatedTime = sqlite3_column_int(stmt, 5);
+
+            flashcards.push_back(card);
+        }
+    }
+
+    sqlite3_finalize(stmt);
+    return flashcards;
+}

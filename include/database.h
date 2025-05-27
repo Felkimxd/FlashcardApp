@@ -2,6 +2,7 @@
 #include "sqlite3.h"
 #include <vector>
 #include <utility>
+#include "flashcard.h"
 
 enum tables
 {
@@ -11,7 +12,6 @@ enum tables
     Deck = 4,
 
 };
-
 struct FlashcardData
 {
     std::string question;
@@ -36,7 +36,8 @@ struct DeckData
     std::string DeckN;
 };
 
-using FlashcarQA = std::vector<std::pair<std::string, std::string>>;
+using FlashcarQA = std::vector<Flashcard>;
+
 class dataBaseManager
 {
 
@@ -54,7 +55,7 @@ public:
     void createDeckTable(const std::string &deckName);
     bool checkDeckExists(std::string const &ID);
 
-    FlashcarQA retrieve_Flashcards(std::string &subject, int const &flashcardQuantity);
+    FlashcarQA retrieve_Flashcards(std::string &deckName);
 
 private:
     void createTables();
