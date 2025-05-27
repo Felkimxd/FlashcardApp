@@ -52,7 +52,7 @@ void studySession::StudyController(){
 
             std::cout << "Answer: " << toanswerFlashcards[0].getAnswer() << std::endl;
             std::cout << "\nTime that takes solve it: " << timeSpent << std::endl;
-            pauseConsole("Comprobe your Answer!");
+            pauseConsole("Comprobe your Answer! Press Enter to continue...");
 
             card.gradeCalc(timeSpent, userFeedback());
 
@@ -62,7 +62,6 @@ void studySession::StudyController(){
             {
                 toanswerFlashcards.erase(toanswerFlashcards.begin());
             }
-            std::cout << "TriesF: " << card.gettriesCounter() << std::endl;
             break;
         }
         

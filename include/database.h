@@ -64,16 +64,6 @@ private:
 
     const char *DBNAME = "C:\\CARPETAS IMPORTANTES\\Carpetas\\FlashcardApp\\archives\\data\\FlashcardApp.db";
 
-    // const char *createDeckTableTemplate =
-    //     "CREATE TABLE IF NOT EXISTS (?) ("
-    //     "ID INTEGER PRIMARY KEY, "
-    //     "Question TEXT NOT NULL, "
-    //     "Answer TEXT NOT NULL, "
-    //     "Grade INTEGER DEFAULT 0, "
-    //     "TriesCounter INTEGER DEFAULT 0, "
-    //     "EstimatedTime INTEGER DEFAULT 0"
-    //     ");";
-
     const char *createUser =
         "CREATE TABLE IF NOT EXISTS User ("
         "ID INTEGER PRIMARY KEY, "
@@ -91,10 +81,6 @@ private:
         "ID INTEGER PRIMARY KEY, "
         "Deck TEXT UNIQUE NOT NULL"
         ");";
-
-    // const std::string insertFlashcardQueryTemplate =
-    //     "INSERT INTO (?) (Question, Answer, Grade, TriesCounter, EstimatedTime) "
-    //     "VALUES (?, ?, NULL, 0, ?);";
 
     const std::string insertUsersQuery =
         "INSERT INTO Users (Username,Password) VALUES (?,?);";

@@ -189,8 +189,6 @@ int main()
 
                     flashcardData.grade = card.getGrade();
                     flashcardData.triesCounter = card.gettriesCounter();
-
-                    std::cout << "Tries: " << flashcardData.triesCounter << std::endl;
                     
                     db.editRegister(tables::Flashcards, std::to_string(card.getID()), &flashcardData, deckName);
                 }
