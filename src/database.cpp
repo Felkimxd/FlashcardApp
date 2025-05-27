@@ -229,7 +229,7 @@ void dataBaseManager::readRegister(tables tableType, std::string const &ID, std:
             std::cout << "Flashcard ID: " << sqlite3_column_text(stmt, 0) << std::endl;
             std::cout << "Question: " << sqlite3_column_text(stmt, 1) << std::endl;
             std::cout << "Answer: " << sqlite3_column_text(stmt, 2) << std::endl;
-            std::cout << "Grade: " << sqlite3_column_int(stmt, 3) << std::endl;
+            std::cout << "Grade: " << sqlite3_column_double(stmt, 3) << std::endl;
             std::cout << "Tries: " << sqlite3_column_int(stmt, 4) << std::endl;
             std::cout << "Estimated Time: " << sqlite3_column_int(stmt, 5) << std::endl;
             std::cout << "\n";
@@ -347,10 +347,12 @@ void dataBaseManager::editRegister(tables tableType, const std::string &ID, void
         {
             query = "UPDATE '"+ deckName +"' SET EstimatedTime = ? WHERE ID = ?;";
         }
+        else if (flashcard->grade >= 0)
+        { // Update grade and Tries counter
+            query = "UPDATE '" + deckName + "' SET Grade = ?, TriesCounter = ? WHERE ID = ?;";
+        }
 
         rc = sqlite3_prepare_v2(this->db, query.c_str(), -1, &stmt, nullptr);
-
-        std::cout << rc << std::endl;
 
         if (!flashcard->question.empty()) {
             sqlite3_bind_text(stmt, 1, flashcard->question.c_str(), -1, SQLITE_STATIC);
@@ -361,8 +363,13 @@ void dataBaseManager::editRegister(tables tableType, const std::string &ID, void
         else if (flashcard->estimatedTime != 0) {
             sqlite3_bind_int(stmt, 1, flashcard->estimatedTime);
         }
-    
-        sqlite3_bind_text(stmt, 2, ID.c_str(), -1, SQLITE_STATIC);
+
+        else if (flashcard->grade >= 0)
+        {
+            sqlite3_bind_double(stmt, 1, flashcard->grade);
+            sqlite3_bind_int(stmt, 2, flashcard->triesCounter);
+            sqlite3_bind_text(stmt, 3, ID.c_str(), -1, SQLITE_STATIC);
+        }
 
         if (sqlite3_step(stmt) == SQLITE_DONE) {
             std::cout << "Flashcard updated successfully in deck '" << deckName << "'!" << std::endl;

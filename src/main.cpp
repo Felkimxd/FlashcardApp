@@ -4,6 +4,7 @@
 #include "database.h"
 #include <limits>
 #include "flashcard.h"
+#include "studySession.h"
 
 #include <chrono>
 #include <thread>
@@ -168,12 +169,11 @@ int main()
 
         while (running2)
         {
-            FlashcardData flashcard;
+            FlashcardData flashcardData;
             UserData user;
             GameData game;
             DeckData deck;
 
-            std::cout << "xdd" << std::endl;
             switch (option = Menu_Decks(deckName))
             {
             case 1: 
@@ -182,18 +182,28 @@ int main()
                 clearScreen();
                 std::vector<Flashcard> flashcardVector = db.retrieve_Flashcards(deckName);
 
-                
-                pauseConsole();
+                studySession Session(flashcardVector, deckName);
+        
+                for (Flashcard &card : Session.flashcards){
+                    
 
+                    flashcardData.grade = card.getGrade();
+                    flashcardData.triesCounter = card.gettriesCounter();
+
+                    std::cout << "Tries: " << flashcardData.triesCounter << std::endl;
+                    
+                    db.editRegister(tables::Flashcards, std::to_string(card.getID()), &flashcardData, deckName);
+                }
+                pauseConsole();
                 break;
             }
             case 2:
             {
                 std::cout << "Enter the question: ";
-                std::getline(std::cin, flashcard.question);
+                std::getline(std::cin, flashcardData.question);
 
                 std::cout << "Enter the answer: ";
-                std::getline(std::cin, flashcard.answer);
+                std::getline(std::cin, flashcardData.answer);
 
                 std::cout << "Enter the estimated time (in seconds): ";
                 std::string tempTime;
@@ -201,21 +211,21 @@ int main()
 
                 try
                 {
-                    flashcard.estimatedTime = std::stoi(tempTime);
+                    flashcardData.estimatedTime = std::stoi(tempTime);
                 }
                 catch (const std::invalid_argument &e)
                 {
                     std::cout << "Error: Invalid number\n";
-                    flashcard.estimatedTime = 0;
+                    flashcardData.estimatedTime = 0;
                 }
                 catch (const std::out_of_range &e)
                 {
                     std::cout << "Error: Out of range value\n";
-                    flashcard.estimatedTime = 0;
+                    flashcardData.estimatedTime = 0;
                 }
 
                 std::cout << "\n";
-                db.insertRegister(tables::Flashcards, &flashcard, deckName);
+                db.insertRegister(tables::Flashcards, &flashcardData, deckName);
                 std::cout << "\nFlashcard added successfully to deck '" << deckName << "'!" << std::endl;
                 pauseConsole();
                 break;
@@ -250,11 +260,11 @@ int main()
                 {
                 case 1:
                     std::cout << "Enter the question:\n";
-                    std::getline(std::cin, flashcard.question);
+                    std::getline(std::cin, flashcardData.question);
                     break;
                 case 2:
                     std::cout << "Enter the answer:\n";
-                    std::getline(std::cin, flashcard.answer);
+                    std::getline(std::cin, flashcardData.answer);
                     break;
                 case 3:
                 {
@@ -263,24 +273,24 @@ int main()
                     std::getline(std::cin, tempTime);
                     try
                     {
-                        flashcard.estimatedTime = std::stoi(tempTime);
+                        flashcardData.estimatedTime = std::stoi(tempTime);
                     }
                     catch (const std::invalid_argument &e)
                     {
                         std::cout << "Error: Invalid number\n";
-                        flashcard.estimatedTime = 0;
+                        flashcardData.estimatedTime = 0;
                     }
                     catch (const std::out_of_range &e)
                     {
                         std::cout << "Error: Out of range value\n";
-                        flashcard.estimatedTime = 0;
+                        flashcardData.estimatedTime = 0;
                     }
                     break;
                 }
                 default:
                     break;
                 }
-                db.editRegister(tables::Flashcards, ID, &flashcard, deckName);
+                db.editRegister(tables::Flashcards, ID, &flashcardData, deckName);
                 break;
             }
             case 6:

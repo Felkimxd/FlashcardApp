@@ -19,8 +19,9 @@ struct FlashcardData
 {
     std::string question;
     std::string answer;
+    float grade;
     int triesCounter = 0;
-    int estimatedTime = 0;
+    float estimatedTime = 0;
 };
 
 struct UserData

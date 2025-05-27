@@ -26,7 +26,7 @@ void Flashcard::gradeCalc(float const &timeTakeIt, float const &userFeedback)
 
         normalizedTime = std::max(0.0, 1.0 - (timeTakeIt / this->estimatedTimeSeconds));
 
-        finalScore = 0.5f * normalizedTime + 0.5f * userFeedback;
+        finalScore = (0.5f * normalizedTime + 0.5f * userFeedback)*10;
     }
     catch(const std::exception& e)
     {

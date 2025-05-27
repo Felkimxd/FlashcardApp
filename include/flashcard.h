@@ -14,11 +14,12 @@ class Flashcard{
         float const getGrade();
         int const gettriesCounter();
         int const getestimatedTIme();
-
-    private:
         void gradeCalc(float const &timeTakeIt, float const &userFeedback);
         void IncrementTries();
 
+
+    private:
+        
         int id;
         std::string question;
         std::string answer;
