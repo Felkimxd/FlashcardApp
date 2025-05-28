@@ -15,7 +15,7 @@ Battle::Battle(std::vector<Flashcard> &userDeck, const std::string &deckName)
 void Battle::startBattle()
 {
     std::cout << "\n=== BATTLE MODE: " << deckName << " ===" << std::endl;
-    std::cout << "¡Prepárate para el duelo de conocimientos!" << std::endl;
+    std::cout << "Prepare to the knowledge duel!" << std::endl;
     battleLoop();
 }
 
