@@ -5,6 +5,8 @@
 #include <limits>
 #include "flashcard.h"
 #include "studySession.h"
+#include "gamification.h"
+#include <windows.h>
 
 #include <chrono>
 #include <thread>
@@ -17,6 +19,7 @@ void clearScreen()
     system("clear");
 #endif
 }
+
 
 void pauseConsole(int seconds = 2)
 {
@@ -50,11 +53,12 @@ int Menu_Decks(const std::string &activeDeck)
     std::cout << "\n======================== Deck Options =======================" << std::endl;
     std::cout << "Active Deck: " << activeDeck << std::endl;
     std::cout << "1. BEGIN A STUDY SESSION" << std::endl;
-    std::cout << "2. Add Flashcard" << std::endl;
-    std::cout << "3. Show Flashcards" << std::endl;
-    std::cout << "4. Delete Flashcard" << std::endl;
-    std::cout << "5. Edit Flashcard" << std::endl;
-    std::cout << "6. Exit" << std::endl;
+    std::cout << "2. BATTLE MODE" << std::endl;
+    std::cout << "3. Add Flashcard" << std::endl;
+    std::cout << "4. Show Flashcards" << std::endl;
+    std::cout << "5. Delete Flashcard" << std::endl;
+    std::cout << "6. Edit Flashcard" << std::endl;
+    std::cout << "7. Exit" << std::endl;
     std::cout << "==============================================================" << "\n";
     std::cout << "Select an option: ";
     std::cin >> option;
@@ -84,7 +88,8 @@ int Menu_Decks_Parameters()
 
 int main()
 {
-    
+    SetConsoleOutputCP(CP_UTF8);
+    std::setlocale(LC_ALL, "es_ES.UTF-8");
     dataBaseManager db;
 
     std::string ID;
@@ -196,6 +201,30 @@ int main()
             }
             case 2:
             {
+                GameData game;
+
+                clearScreen();
+                std::vector<Flashcard> flashcardVector = db.retrieve_Flashcards(deckName);
+
+                if (flashcardVector.empty())
+                {
+                    std::cout << "You need flashcards to begin the battle!" << std::endl;
+                    pauseConsole();
+                    break;
+                }
+
+                Battle battle(flashcardVector, deckName);
+                battle.startBattle();
+
+                // Actualizar puntos del usuario
+                int battleScore = battle.getFinalScore();
+                db.insertRegister(tables::Game, &game, deckName);
+
+                pauseConsole();
+                break;
+            }
+            case 3:
+            {
                 std::cout << "Enter the question: ";
                 std::getline(std::cin, flashcardData.question);
 
@@ -227,12 +256,12 @@ int main()
                 pauseConsole();
                 break;
             }
-            case 3:
+            case 4:
                 std::cout << "\nShowing flashcards from deck '" << deckName << "':" << std::endl;
                 db.readRegister(tables::Flashcards, "", deckName);
                 pauseConsole();
                 break;
-            case 4:
+            case 5:
             {
                 db.readRegister(tables::Flashcards, "", deckName);
                 std::cout << "Insert the ID to delete from deck: \n";
@@ -243,7 +272,7 @@ int main()
                 pauseConsole();
                 break;
             }
-            case 5:
+            case 6:
             {
                 int parameters_option;
                 db.readRegister(tables::Flashcards, "", deckName);
@@ -290,7 +319,7 @@ int main()
                 db.editRegister(tables::Flashcards, ID, &flashcardData, deckName);
                 break;
             }
-            case 6:
+            case 7:
                 std::cout << "Exiting..." << std::endl;
                 running2 = false;
                 break;
