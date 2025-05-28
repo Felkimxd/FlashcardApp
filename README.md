@@ -108,6 +108,7 @@ Upcoming features:
 - [ ] Detailed statistics
 - [ ] Export/Import decks
 - [ ] Users Registers
+- [ ] Enhance Gamification Mode, adding RPG essence
 
 ## Contributing
 
